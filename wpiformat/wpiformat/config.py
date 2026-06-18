@@ -21,6 +21,7 @@ class Config:
         self.__cpp_src_include_regex = self.regex("cppSrcFileInclude")
         self.__generated_exclude_regex = self.regex("generatedFileExclude")
         self.__modifiable_exclude_regex = self.regex("modifiableFileExclude")
+        self.__isort_exclude_regex = self.regex("pythonIsortFileExclude")
 
     @staticmethod
     def read_file(directory: Path, filename: Path) -> tuple[Path, list[str]]:
@@ -175,6 +176,15 @@ class Config:
         filename -- filename
         """
         return self.__modifiable_exclude_regex.search(filename.as_posix()) is not None
+
+    def is_excluded_isort_file(self, filename: Path) -> bool:
+        """
+        Returns True if the file is in the isort exclude list.
+
+        Keyword Arguments:
+        filename -- filename
+        """
+        return self.__isort_exclude_regex.search(filename.as_posix()) is not None
 
     def __parse_config_file(
         self, directory: Path, filename: Path

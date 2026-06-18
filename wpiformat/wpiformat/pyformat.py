@@ -44,11 +44,20 @@ class PyFormat(BatchTask):
             print("error: black not found in PATH. Is it installed?", file=sys.stderr)
             return False
 
-        try:
-            args = [sys.executable, "-m", "isort", "--profile", "black", "-q"]
-            subprocess.run(args + filenames)
-        except FileNotFoundError:
-            print("error: isort not found in PATH. Is it installed?", file=sys.stderr)
-            return False
+        # Apply user defined filter to files before calling isort
+        isort_filenames = []
+        for filename in filenames:
+            if not config_file.is_excluded_isort_file(filename):
+                isort_filenames.append(filename)
+
+        if isort_filenames:
+            try:
+                args = [sys.executable, "-m", "isort", "--profile", "black", "-q"]
+                subprocess.run(args + isort_filenames)
+            except FileNotFoundError:
+                print(
+                    "error: isort not found in PATH. Is it installed?", file=sys.stderr
+                )
+                return False
 
         return True
